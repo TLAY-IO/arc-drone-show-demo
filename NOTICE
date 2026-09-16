@@ -1,0 +1,37 @@
+arc-drone-show-demo
+Copyright (c) 2026 TLAY
+
+This product is the companion reference integration for the SF Drone Show 2026
+nanopayment demonstration, built by TLAY in collaboration with Circle, Arc, and Arkreen.
+
+This product depends on the following open-source software at runtime, fetched
+via the listed dependency manager and not vendored in this repository:
+
+  - TLAY-IO/boat-mer (Apache-2.0)
+    BoAT MER - Machine Economy Runtime
+    https://github.com/TLAY-IO/boat-mer
+    Fetched via ESP-IDF Component Manager (apps/*/idf_component.yml)
+
+  - TLAY-IO/hashanchor (Apache-2.0)
+    HashAnchor client SDK (@tlay/hashanchor-client)
+    https://github.com/TLAY-IO/hashanchor
+    Fetched via npm (cloud/settle-worker/package.json)
+
+  - Eclipse Mosquitto (EPL-2.0 / EDL-1.0)
+    https://mosquitto.org/
+    Used as MQTT broker (cloud/docker-compose.yml)
+
+  - Next.js (MIT)
+    https://nextjs.org/
+    Used for the demo visualization web UI (cloud/web/)
+
+External services depended on (not redistributed):
+
+  - HashAnchor sandbox endpoint
+    https://hashanchor.xid.network (settle bridge, operated by TLAY)
+
+  - Circle Gateway batched x402
+    https://gateway-api.circle.com (operated by Circle)
+
+  - Arc Testnet
+    Public test network for settlement

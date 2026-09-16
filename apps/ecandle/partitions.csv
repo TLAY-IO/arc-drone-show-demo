@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+# Single-app (no OTA) layout for the demo seller on 4 MB flash. The uplink
+# build (NimBLE + WiFi + MQTT + full-profile BoAT MER) is ~1.07 MB, over the
+# default 1 MB app partition — give the app 3 MB.
+# Name,     Type, SubType, Offset,   Size
+nvs,        data, nvs,     0x9000,   0x6000
+phy_init,   data, phy,     0xf000,   0x1000
+factory,    app,  factory, 0x10000,  0x300000

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MIT
+# apps/drone NimBLE central defaults.
+#
+# Target is pinned to esp32c3 (the SF Drone Show buyer board) so a fresh-clone
+# `idf.py build` produces a flashable C3 image WITHOUT a manual `idf.py
+# set-target` first. Without this line idf.py silently defaults to esp32
+# (xtensa) and the build greens but won't flash the C3 ("This chip is ESP32-C3,
+# not ESP32"). To target a different chip, run `idf.py set-target <chip>`.
+CONFIG_IDF_TARGET="esp32c3"
+
+# --- NimBLE host ---
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
+
+# Central + observer to scan/connect. ROLE_PERIPHERAL **must** stay enabled even
+# though we never advertise: a pure-central NimBLE build compiles out the GATTS
+# layer and then silently drops inbound notifications (0xEE02/03/06 would never
+# arrive). See TLAY-IO/boat-mer ble-protocol notes.
+CONFIG_BT_NIMBLE_ROLE_CENTRAL=y
+CONFIG_BT_NIMBLE_ROLE_OBSERVER=y
+CONFIG_BT_NIMBLE_ROLE_PERIPHERAL=y
+CONFIG_BT_NIMBLE_ROLE_BROADCASTER=y
+
+CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1
+
+# 512-byte ATT MTU so the ~400-byte 0xEE04 proof JSON writes in a single ATT op
+# (default 23 would fragment every slice notification + the proof write).
+CONFIG_BT_NIMBLE_ATT_PREFERRED_MTU=512
+
+# The first on-chip EIP-3009 sign overflowed the default 4 KB host-task stack on
+# real hardware; 10 KB gives the secp256k1 + keccak path headroom.
+CONFIG_BT_NIMBLE_HOST_TASK_STACK_SIZE=10240
+
+# --- NVS (on-chip wallet persistence via the boat-mer PAL) ---
+CONFIG_NVS_ENCRYPTION=n

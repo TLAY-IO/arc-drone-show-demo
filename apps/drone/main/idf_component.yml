@@ -1,0 +1,22 @@
+## ESP-IDF Component Manager manifest for apps/drone.
+##
+## Lives in the `main` component dir (where the Component Manager looks).
+## Fetches boat-mer at the pinned tag at build time into managed_components/
+## (gitignored, build-time only). This repo never vendors boat-mer source —
+## that would violate the MIT-vs-Apache license boundary discussed in NOTICE.
+##
+## NOTE: this is a *git-source* dependency. boat-mer has been public since
+## 2026-08-11, so unauthenticated fresh clones fetch it fine. CI's
+## tag-availability preflight curls the public release URL for the pinned
+## tag — a visibility check; the real proof is a fresh-clone `idf.py build`
+## where the Component Manager actually fetches the tag.
+
+dependencies:
+  TLAY-IO/boat-mer:
+    ## v1.0.1: exact-prefix nonce replay guard + in-place session rollover +
+    ## init_sz guard — the engine the September demo firmware actually runs.
+    version: "v1.0.1"
+    git: "https://github.com/TLAY-IO/boat-mer.git"
+
+  idf:
+    version: ">=5.5.1"

@@ -1,0 +1,28 @@
+# Topic ACL — three roles. Everything not granted here is denied.
+#
+# The one rule that matters most: ONLY `worker` may publish to
+# ecandle/+/cmd/# — that is the seller's signing channel (see
+# mosquitto.conf header). Devices authenticate by embedding credentials
+# in their broker URI (mqtt://device:<pass>@host:1883); esp-mqtt parses
+# user:pass from the URI, no firmware change needed.
+
+# ── seller devices ──
+user device
+topic write ecandle/+/status
+topic write ecandle/+/nanopay
+topic write ecandle/+/settle
+topic write ecandle/+/burn_intent_sig
+topic read  ecandle/+/cmd/#
+
+# ── cloud workers (settle-worker + burn-intent-worker) ──
+user worker
+topic read  ecandle/#
+topic write ecandle/+/circle_ack
+topic write ecandle/+/mint_ack
+topic write ecandle/+/mint_error
+topic write ecandle/+/cmd/#
+
+# ── web app (SSE bridge + /api/mint) ──
+user web
+topic read  ecandle/#
+topic write ecandle/mint-queue

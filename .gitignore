@@ -1,0 +1,35 @@
+# Node
+node_modules/
+.next/
+*.log
+npm-debug.log*
+
+# ESP-IDF
+build/
+build-*/
+managed_components/
+sdkconfig
+sdkconfig.old
+dependencies.lock
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+*.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Mosquitto
+cloud/mosquitto/data/
+cloud/mosquitto/log/
+cloud/web/tsconfig.tsbuildinfo

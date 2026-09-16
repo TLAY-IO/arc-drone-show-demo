@@ -1,0 +1,16 @@
+## ESP-IDF Component Manager manifest for apps/ecandle
+##
+## Fetches boat-mer at the pinned tag at build time. The source code lands
+## in `managed_components/` (gitignored, build-time only). This repo never
+## vendors boat-mer source — that would violate the MIT-vs-Apache license
+## boundary discussed in NOTICE.
+
+dependencies:
+  TLAY-IO/boat-mer:
+    ## v1.0.1: exact-prefix nonce replay guard + in-place session rollover +
+    ## init_sz guard — the engine the September demo firmware actually runs.
+    version: "v1.0.1"
+    git: "https://github.com/TLAY-IO/boat-mer.git"
+
+  idf:
+    version: ">=5.5.1"

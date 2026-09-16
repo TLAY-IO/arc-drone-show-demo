@@ -1,0 +1,9 @@
+# The builder stage installs from package-lock.json; without this file the
+# later `COPY . .` would copy the host's node_modules straight over that
+# install, so the image would be built from whatever the developer happens to
+# have locally instead of from the lockfile.
+node_modules
+.next
+.env
+.env.*
+npm-debug.log*

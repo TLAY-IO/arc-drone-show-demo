@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: MIT
+menu "eCandle demo seller"
+
+config DEMO_WIFI_SSID
+    string "WiFi SSID"
+    default ""
+    help
+        Optional build-time WiFi network for SNTP (valid slice timestamps) and
+        the settle-proof MQTT uplink. Leave EMPTY (the default) to provision at
+        runtime through the SoftAP captive portal — on first boot the device
+        brings up an "ecandle-xxxx" hotspot and a setup page. Set a value only
+        if you want to bake credentials in and skip the portal.
+
+config DEMO_WIFI_PASSWORD
+    string "WiFi password"
+    default ""
+    help
+        WPA2 password (empty for an open network).
+
+config DEMO_MQTT_BROKER_URI
+    string "MQTT broker URI"
+    default "mqtt://device:REPLACE_WITH_DEVICE_PASSWORD@192.168.1.10:1883"
+    help
+        Mosquitto broker the cloud reference runs (cloud/docker-compose.yml).
+        The seller publishes settle batches to ecandle/<id>/settle; the
+        settle-worker subscribes and relays to HashAnchor.
+
+        The broker requires authentication (cloud/mosquitto/mosquitto.conf):
+        an open broker would let anyone on the LAN obtain seller signatures
+        over attacker-chosen digests. Embed the "device" credentials created
+        by cloud/mosquitto/gen-passwd.sh in this URI as user:pass@host —
+        esp-mqtt parses them, no code change. Replace the placeholder with the device password gen-passwd.sh printed,
+        and 192.168.1.10 with the same address you set as MQTT_BIND_IP in
+        cloud/.env — the board cannot reach the host's loopback.
+
+config DEMO_SETTLE_NETWORK
+    string "Settlement network (CAIP-2)"
+    default "eip155:5042002"
+    help
+        The network label carried in each settle envelope so the worker fills
+        paymentRequirements.network. Arc Testnet = eip155:5042002. This is a
+        settle LABEL, not an EIP-712 signing chainId (the seller does not sign).
+
+config DEMO_RATE_USDC_PER_KWH_MICRO
+    int "Charging rate (micro-USDC per kWh)"
+    default 10000000
+    help
+        Seller quote rate in micro-USDC per kWh. 10000000 = $10/kWh
+        ("premium nano-charging"). At 120 W x 5 s slices this bills ~1667
+        micro-USDC/slice. The default is deliberately high so a handful of
+        slices accumulate the seller's Circle Gateway credit past the
+        ~10000 micro-USDC mint floor (Path A BurnIntent -> gatewayMint) and
+        so the Circle batched-x402 fee stays a small fraction of each slice.
+
+endmenu

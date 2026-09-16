@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: License + scrub checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run verify-build
+        run: bash scripts/verify-build.sh
+
+  web:
+    name: cloud/web build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: cloud/web/package-lock.json
+      - name: Install
+        working-directory: cloud/web
+        # npm ci (not install): fail loudly when package-lock.json is out of
+        # sync with package.json instead of green-lighting a drifted tree.
+        run: npm ci
+      - name: Type check
+        working-directory: cloud/web
+        run: npx tsc --noEmit
+      - name: Build
+        working-directory: cloud/web
+        run: npm run build
+
+  settle-worker:
+    name: cloud/settle-worker syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax check
+        run: |
+          node --check cloud/settle-worker/index.js
+          node --check cloud/settle-worker/single-instance-guard.js
+
+  burn-intent-worker:
+    name: cloud/burn-intent-worker syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax check
+        run: |
+          node --check cloud/burn-intent-worker/index.js
+          node --check cloud/burn-intent-worker/burn-intent.js
+          node --check cloud/burn-intent-worker/single-instance-guard.js
+          node --check cloud/burn-intent-worker/scripts/gen-operator-wallet.js
+
+  boat-mer-tag-availability:
+    name: boat-mer tag preflight
+    runs-on: ubuntu-latest
+    # boat-mer has been public since 2026-08-11, so this is now a hard gate:
+    # the tag BOTH apps pin must exist publicly, or an external fresh-clone
+    # build breaks. The tag is read from the manifests (never hardcoded here)
+    # so this check cannot silently keep validating a tag we no longer pin.
+    # curl-200 only proves the release page exists — the full proof remains a
+    # fresh-clone `idf.py build` where the Component Manager fetches the tag.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the pinned boat-mer tag is publicly reachable
+        run: |
+          tags=$(grep -hA3 'TLAY-IO/boat-mer:' \
+                   apps/drone/main/idf_component.yml \
+                   apps/ecandle/main/idf_component.yml \
+                 | grep -E '^\s*version:' | tr -d ' "' | cut -d: -f2 | sort -u)
+          echo "pinned tag(s): $tags"
+          if [ "$(echo "$tags" | wc -l)" -ne 1 ]; then
+            echo "ERROR: apps/drone and apps/ecandle pin different boat-mer tags" && exit 1
+          fi
+          curl -fsS -o /dev/null -w "%{http_code}\n" \
+            "https://github.com/TLAY-IO/boat-mer/releases/tag/${tags}" \
+            || (echo "boat-mer ${tags} release not publicly reachable; external fresh-clone will fail" && exit 1)

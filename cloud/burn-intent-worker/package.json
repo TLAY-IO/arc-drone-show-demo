@@ -1,0 +1,21 @@
+{
+  "name": "arc-demo-burn-intent-worker",
+  "version": "0.1.0-rc1",
+  "private": true,
+  "description": "Path A worker — BurnIntent → Circle /v1/transfer → gatewayMint on Arc Testnet, for arc-drone-show-demo",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "gen-operator": "node scripts/gen-operator-wallet.js"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "mqtt": "^5.10.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,85 @@
+## docker-compose.yml — demo cloud stack
+##
+## Brings up:
+##   - mosquitto: MQTT broker on :1883 (devices publish here)
+##   - web: Next.js + SSE bridge + /demo visualization on :3000
+##   - settle-worker: subscribes to MQTT settle batches and forwards to HashAnchor
+##   - burn-intent-worker: Path A — "Mint to Arc". Optional: only starts with
+##     `docker compose --profile mint up` and needs an operator key + a funded
+##     seller (see .env.example + burn-intent-worker/README.md)
+
+services:
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: arc-demo-mosquitto
+    ports:
+      # The eCandle board is a separate device, so it needs a routable address:
+      # set MQTT_BIND_IP to this host's LAN address and use the same address in
+      # the firmware broker URI. Default is loopback so a bare `docker compose up`
+      # never puts the broker on a network with the credentials still unset.
+      # Only ever bind it to a LAN you control, and add TLS before anything wider.
+      - "${MQTT_BIND_IP:-127.0.0.1}:1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/acl:/mosquitto/config/acl:ro
+      # Run ./mosquitto/gen-passwd.sh once before first `docker compose up`
+      - ./mosquitto/passwd:/mosquitto/config/passwd:ro
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      args:
+        # Build-time inlined values (see web/Dockerfile). Set in .env;
+        # after changing them run `docker compose build web`.
+        NEXT_PUBLIC_DEMO_SELLER_EOA: ${NEXT_PUBLIC_DEMO_SELLER_EOA:-}
+        NEXT_PUBLIC_DEMO_DEVICE_ID: ${NEXT_PUBLIC_DEMO_DEVICE_ID:-}
+        NEXT_PUBLIC_ARC_EXPLORER: ${NEXT_PUBLIC_ARC_EXPLORER:-}
+    container_name: arc-demo-web
+    ports:
+      # Loopback-only by default; put a reverse proxy in front to expose it.
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Credentialed URL (matches mosquitto ACL user "web"); override in .env
+      MQTT_BROKER: ${MQTT_URL_WEB:?set MQTT_URL_WEB in cloud/.env — run ./mosquitto/gen-passwd.sh first}
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+  settle-worker:
+    build: ./settle-worker
+    container_name: arc-demo-settle-worker
+    env_file:
+      - .env
+    environment:
+      # Credentialed URL (mosquitto ACL user "worker"); override in .env
+      MQTT_BROKER: ${MQTT_URL_WORKER:?set MQTT_URL_WORKER in cloud/.env — run ./mosquitto/gen-passwd.sh first}
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+  burn-intent-worker:
+    build: ./burn-intent-worker
+    container_name: arc-demo-burn-intent-worker
+    # Optional service — needs real chain credentials, so it is off by
+    # default. Start with:  docker compose --profile mint up -d
+    profiles: ["mint"]
+    env_file:
+      - .env
+    environment:
+      # Credentialed URL (mosquitto ACL user "worker"); override in .env
+      MQTT_BROKER: ${MQTT_URL_WORKER:?set MQTT_URL_WORKER in cloud/.env — run ./mosquitto/gen-passwd.sh first}
+      OPERATOR_KEY_PATH: /run/secrets/operator.key
+    volumes:
+      # Generate with: node burn-intent-worker/scripts/gen-operator-wallet.js
+      # then set OPERATOR_KEY_FILE in .env to its host path. Mounted
+      # read-only; the key never enters the image.
+      - ${OPERATOR_KEY_FILE:-./burn-intent-worker/operator.key}:/run/secrets/operator.key:ro
+    depends_on:
+      - mosquitto
+    restart: unless-stopped

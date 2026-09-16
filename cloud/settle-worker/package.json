@@ -1,0 +1,20 @@
+{
+  "name": "arc-demo-settle-worker",
+  "version": "0.1.0-rc1",
+  "private": true,
+  "description": "MQTT → batch → HashAnchor settle forwarder for arc-drone-show-demo",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.10.0",
+    "@tlay/hashanchor-client": "github:TLAY-IO/hashanchor#v1.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
