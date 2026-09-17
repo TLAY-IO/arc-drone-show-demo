@@ -165,6 +165,7 @@ not part of the default stack.
 ```bash
 # generate an operator key, then bring the stack up with the mint profile
 node cloud/burn-intent-worker/scripts/gen-operator-wallet.js
+cd cloud                                  # compose lives here, not at the repo root
 docker compose --profile mint up
 ```
 
