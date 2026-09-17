@@ -17,6 +17,13 @@ dependencies.lock
 .env.local
 .env.*.local
 *.env.local
+# Private keys. docker-compose defaults OPERATOR_KEY_FILE to
+# ./burn-intent-worker/operator.key — i.e. inside this repo — so without these
+# lines a `git add -A` would stage the operator private key.
+*.key
+*.pem
+*.p12
+secrets/
 
 # OS
 .DS_Store
