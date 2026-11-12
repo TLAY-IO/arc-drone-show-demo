@@ -16,6 +16,23 @@ If you want to build your own machine-economy app on different hardware or with 
 
 ---
 
+## The drone show
+
+On September 17, 2026, a drone show over San Francisco marked the launch of
+Arc mainnet. As Arc describes it, one of the drones negotiated its own
+recharge rate, paid in USDC nanopayment by nanopayment, and settled on Arc —
+machine to machine. This repository is the open reference for that payment
+flow: the buyer and seller firmware and the cloud side (see
+[What's NOT here](#whats-not-here) for what the show hardware had that this
+repo replaces with a dev board).
+
+Official material from Circle and Arc:
+
+- **Circle — video:** [Arc Mainnet is Live Drone Show](https://www.youtube.com/watch?v=eEqN6T0vhOc)
+- **Arc — builder demo page:** [arc.io/drones](https://www.arc.io/drones) ("Can a drone charge itself?")
+
+---
+
 ## Networks
 
 This demo runs on **Arc**. Two chains are supported:
