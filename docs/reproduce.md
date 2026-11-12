@@ -77,7 +77,15 @@ render with no slice or settlement rows yet — the page is waiting on the broke
 
 > **`?live=1` is not optional.** Without it the page runs simulation cycles on
 > mock data and animates on its own, which looks like a working system before
-> you have flashed a single board.
+> you have flashed a single board. The header tells you which you are looking
+> at: `Live · Arc Testnet` only when the page is reading this stack's broker;
+> `Mock data · not live` without `?live=1`.
+
+> **Just want to see it move first?** `docker compose -f docker-compose.sim.yml up --build`
+> runs the broker, SSE bridge and page against a device simulator — no boards,
+> no `.env`. It is a separate stack, labelled `Simulated devices · no chain`,
+> and it does not exercise signing or settlement. See
+> [`cloud/sim/README.md`](../cloud/sim/README.md).
 
 ## Step 3 — Fund the drone's Gateway balance on Arc Testnet
 

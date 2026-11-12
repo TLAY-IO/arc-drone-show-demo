@@ -1,0 +1,53 @@
+## docker-compose.sim.yml — the cloud side with NO hardware
+##
+##   docker compose -f docker-compose.sim.yml up --build
+##   open http://localhost:3000/demo?live=1
+##
+## No boards, no .env, no broker credentials, no faucet, no deposit.
+##
+## Brings up:
+##   - mosquitto: a private broker (no host port, anonymous — see mosquitto/sim.conf)
+##   - sim:       publishes seller-shaped MQTT events (see sim/README.md)
+##   - web:       the same Next.js SSE bridge + /demo page as the real stack,
+##                built with a "simulated" flag so the page says so on screen
+##
+## Deliberately NOT started: settle-worker and burn-intent-worker. Nothing in
+## this stack talks to HashAnchor, Circle or Arc, so nothing here can settle,
+## mint or spend — the settlement rows on the page are simulated and labelled.
+##
+## This is a separate file rather than a profile of docker-compose.yml so the
+## two cannot be half-combined: the real stack requires broker credentials and
+## this one must never have a real device or worker attached to it.
+
+name: arc-demo-sim
+
+services:
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    volumes:
+      - ./mosquitto/sim.conf:/mosquitto/config/mosquitto.conf:ro
+    # No `ports:` on purpose — reachable only from this compose network.
+
+  sim:
+    build: ./sim
+    environment:
+      MQTT_BROKER: mqtt://mosquitto:1883
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      args:
+        # Inlined at build time: switches the header to "Simulated devices".
+        NEXT_PUBLIC_DEMO_SIMULATED: "1"
+    ports:
+      # Loopback-only. Set SIM_WEB_PORT if 3000 is taken (e.g. by the real stack).
+      - "127.0.0.1:${SIM_WEB_PORT:-3000}:3000"
+    environment:
+      MQTT_BROKER: mqtt://mosquitto:1883
+    depends_on:
+      - mosquitto
+    restart: unless-stopped

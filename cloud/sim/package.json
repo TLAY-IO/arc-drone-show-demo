@@ -1,0 +1,14 @@
+{
+  "name": "arc-demo-sim",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Device simulator: publishes seller-shaped MQTT events so the cloud side runs with no hardware",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.10.0"
+  }
+}

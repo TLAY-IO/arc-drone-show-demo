@@ -32,6 +32,17 @@ MQTT_BROKER=mqtt://localhost:1883 npm run dev
 Then open <http://localhost:3000/demo?live=1>.
 (Without `?live=1` you get the mock simulation, not your devices.)
 
+## Which data am I looking at?
+
+The header's right-hand label names the source, because all three animate
+identically:
+
+| Label | Source |
+|---|---|
+| `Live · Arc Testnet` / `Live · Arc Mainnet` | `?live=1`, reading your broker — real devices |
+| `Simulated devices · no chain` | `?live=1` on the no-hardware stack ([`../sim`](../sim/README.md)); events come from the simulator through the real broker and SSE bridge |
+| `Mock data · not live` | no `?live=1`; browser-only cycles, the broker is not read at all |
+
 ## License
 
 MIT (see ../../LICENSE).

@@ -55,6 +55,10 @@ const DEMO_SELLER_EOA = process.env.NEXT_PUBLIC_DEMO_SELLER_EOA ?? null
 // Worker re-floors anyway; this is a UI gate so the button only enables when
 // the user has actually accumulated enough credit to clear it.
 const MINT_FLOOR_MICRO_USDC = 10_000
+// Set (at build time) by docker-compose.sim.yml: the events on the broker
+// come from cloud/sim, not from boards. The page must say so on screen —
+// simulated rows look exactly like real ones otherwise.
+const DEVICES_SIMULATED = process.env.NEXT_PUBLIC_DEMO_SIMULATED === "1"
 
 /**
  * Simulate variable per-slice power to mimic the real CC-CV charging curve.
@@ -828,8 +832,24 @@ export default function DemoPage() {
           </div>
           <div className="flex items-center gap-3">
             <ChargingStateBadge isCharging={isCharging} />
-            <div className="text-[10px] text-white/50 uppercase tracking-widest">Live · {ARC_CHAIN_LABEL}</div>
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            {/* Three sources can drive this page and only one of them is a
+                real device. Name the source: the mock cycles and the
+                simulator animate exactly like a working system. */}
+            {isLive && !DEVICES_SIMULATED ? (
+              <>
+                <div className="text-[10px] text-white/50 uppercase tracking-widest">Live · {ARC_CHAIN_LABEL}</div>
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </>
+            ) : (
+              <div
+                className="text-[10px] uppercase tracking-widest px-2 py-1 rounded border border-amber-400/60 text-amber-300"
+                title={isLive
+                  ? "Events come from cloud/sim through the real broker and SSE bridge. No devices, no chain, no funds."
+                  : "Browser-only mock cycles. Add ?live=1 to read the broker."}
+              >
+                {isLive ? "Simulated devices · no chain" : "Mock data · not live"}
+              </div>
+            )}
           </div>
         </header>
 

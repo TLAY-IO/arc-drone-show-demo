@@ -65,6 +65,21 @@ jobs:
           node --check cloud/burn-intent-worker/single-instance-guard.js
           node --check cloud/burn-intent-worker/scripts/gen-operator-wallet.js
 
+  sim-smoke:
+    name: no-hardware stack smoke test
+    runs-on: ubuntu-latest
+    # The only job that runs the cloud side: it brings up broker + SSE bridge +
+    # page against the device simulator and asserts that slices and a settle
+    # ack reach /api/stream. It covers the topic layout, the bridge and the
+    # web image build. It does NOT cover signing, settlement or minting —
+    # nothing in the sim stack touches HashAnchor, Circle or Arc.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: node --check cloud/sim/index.js
+      - name: Bring up the sim stack and read /api/stream
+        run: bash cloud/sim/smoke.sh
+
   boat-mer-tag-availability:
     name: boat-mer tag preflight
     runs-on: ubuntu-latest

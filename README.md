@@ -43,6 +43,29 @@ is not one of them:**
 > directory per chain** (the CMake cache will otherwise silently carry the
 > wrong chain into the next build).
 
+## See it run without hardware (~3 minutes)
+
+No boards, no credentials, no funds — just Docker:
+
+```bash
+git clone https://github.com/TLAY-IO/arc-drone-show-demo
+cd arc-drone-show-demo/cloud
+docker compose -f docker-compose.sim.yml up --build
+open 'http://localhost:3000/demo?live=1'
+```
+
+A device simulator publishes seller-shaped events to a private broker, and the
+real SSE bridge and demo page render them: a slice every 5 s, a settlement
+batch every 30 s. The page is labelled `Simulated devices · no chain`, because
+that is what it is — **nothing is signed, settled or minted, and nothing
+touches HashAnchor, Circle or Arc.** It shows you the cloud side and the page;
+it proves nothing about the payment path. See
+[`cloud/sim/README.md`](cloud/sim/README.md) for exactly what is real and what
+is not.
+
+When you want real signatures and real settlement, continue with the
+Quickstart below.
+
 ## Quickstart (~30–45 minutes)
 
 **This Quickstart runs on Arc Testnet** — the development default, so you spend
