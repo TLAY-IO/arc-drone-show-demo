@@ -31,6 +31,13 @@ Official material from Circle and Arc:
 - **Circle — video:** [Arc Mainnet is Live Drone Show](https://www.youtube.com/watch?v=eEqN6T0vhOc)
 - **Arc — builder demo page:** [arc.io/drones](https://www.arc.io/drones) ("Can a drone charge itself?")
 
+And the page those point to:
+
+- **TLAY — verification page:** [demo.tlay.io/demo/drone/mainnet/live](https://demo.tlay.io/demo/drone/mainnet/live),
+  the hosted demo page for the show's Arc mainnet run. It is live, not a
+  recording: it reads the show devices, which are not powered continuously, so
+  outside a session it shows the most recent slices and settlements and waits.
+
 ---
 
 ## Networks
