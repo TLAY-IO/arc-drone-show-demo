@@ -33,6 +33,11 @@ jobs:
       - name: Type check
         working-directory: cloud/web
         run: npx tsc --noEmit
+      - name: Lint
+        working-directory: cloud/web
+        # Fails on errors only. Two React Compiler rules are downgraded to
+        # warnings in eslint.config.mjs — see the note there.
+        run: npm run lint
       - name: Build
         working-directory: cloud/web
         run: npm run build
@@ -51,13 +56,25 @@ jobs:
           node --check cloud/settle-worker/single-instance-guard.js
 
   burn-intent-worker:
-    name: cloud/burn-intent-worker syntax
+    name: cloud/burn-intent-worker tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: cloud/burn-intent-worker/package-lock.json
+      - name: Install
+        working-directory: cloud/burn-intent-worker
+        run: npm ci
+      - name: BurnIntent EIP-712 tests
+        working-directory: cloud/burn-intent-worker
+        # Checks the type table and digest against Circle's published type
+        # strings and typehash constants, and against a by-hand EIP-712
+        # computation. It does not contact Circle or Arc: whether the deployed
+        # Gateway accepts a signature is only proven by a live settlement.
+        run: npm test
       - name: Syntax check
         run: |
           node --check cloud/burn-intent-worker/index.js
@@ -79,6 +96,33 @@ jobs:
         run: node --check cloud/sim/index.js
       - name: Bring up the sim stack and read /api/stream
         run: bash cloud/sim/smoke.sh
+
+  firmware:
+    name: firmware build (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    # A fresh-checkout `idf.py build` of each app: the Component Manager
+    # fetches boat-mer at the pinned tag and the app must compile and link
+    # against it. This is the proof the tag preflight below can only gesture
+    # at. It is a compile check — nothing is flashed or run, so it says
+    # nothing about behaviour on a board.
+    container: espressif/idf:v5.5.4
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [drone, ecandle]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build apps/${{ matrix.app }}
+        shell: bash
+        working-directory: apps/${{ matrix.app }}
+        run: |
+          git config --global --add safe.directory '*'
+          . "$IDF_PATH/export.sh"
+          idf.py build
+      - name: Report image size
+        shell: bash
+        working-directory: apps/${{ matrix.app }}
+        run: ls -l build/*.bin
 
   boat-mer-tag-availability:
     name: boat-mer tag preflight

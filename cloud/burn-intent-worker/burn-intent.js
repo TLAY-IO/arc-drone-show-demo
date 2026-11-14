@@ -49,8 +49,10 @@ export const BURN_INTENT_TYPES = {
 // addresses — take the mainnet GatewayWallet/GatewayMinter/USDC addresses
 // and the EIP-712 domain fields from Circle's official contract-address
 // reference before pointing this worker at a mainnet profile. The EIP-712
-// domain includes `verifyingContract`, so a wrong address means every
-// signature fails to recover. Set them via the ARC_* env overrides above.
+// domain itself is name + version only (no chainId, no verifyingContract),
+// but the contract addresses are signed fields of the TransferSpec, so a
+// wrong address still changes the digest and the intent is rejected. Set
+// them via the ARC_* env overrides.
 //   Testnet chainId: 5042002  explorer: https://testnet.arcscan.app
 //   Mainnet chainId: 5042     explorer: https://explorer.arc.io
 export const ARC = {

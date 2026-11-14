@@ -1,0 +1,34 @@
+# Dependabot: weekly update PRs, grouped per directory so a routine week is a
+# handful of PRs rather than one per package.
+#
+# Not covered: the firmware's boat-mer pin (apps/*/main/idf_component.yml) and
+# the settle-worker's hashanchor pin are git tags, bumped by hand on purpose —
+# both apps must move to the same boat-mer tag together.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /cloud/web
+    schedule: { interval: weekly }
+    groups:
+      web: { patterns: ["*"] }
+  - package-ecosystem: npm
+    directory: /cloud/burn-intent-worker
+    schedule: { interval: weekly }
+    groups:
+      burn-intent-worker: { patterns: ["*"] }
+  - package-ecosystem: npm
+    directory: /cloud/settle-worker
+    schedule: { interval: weekly }
+    groups:
+      settle-worker: { patterns: ["*"] }
+  - package-ecosystem: npm
+    directory: /cloud/sim
+    schedule: { interval: weekly }
+    groups:
+      sim: { patterns: ["*"] }
+  - package-ecosystem: docker
+    directories: ["/cloud/web", "/cloud/burn-intent-worker", "/cloud/settle-worker", "/cloud/sim"]
+    schedule: { interval: weekly }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }

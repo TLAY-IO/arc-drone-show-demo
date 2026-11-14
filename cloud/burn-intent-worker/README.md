@@ -66,3 +66,21 @@ verifies that no Circle UUID was covered by two confirmed mints.
 - On-chain `availableBalance` is read for logging but never gates the mint
   (it lags Circle-side credit during active settlement); Circle's
   `/v1/transfer` is the authoritative check and fails safe before gas.
+
+## Tests
+
+```bash
+npm ci && npm test
+```
+
+`burn-intent.test.js` checks the EIP-712 type table and digest in
+`burn-intent.js` against references from outside this repo: the type strings
+and typehash constants in Circle's published
+[`evm-gateway-contracts`](https://github.com/circlefin/evm-gateway-contracts)
+(`src/lib/BurnIntents.sol`, `TransferSpec.sol`, `EIP712Domain.sol`), and a
+digest recomputed by hand from the EIP-712 definition. It also covers the
+self-mint field layout, signature recovery and the `/v1/transfer` body shape.
+
+It runs offline. It does not show that a deployed Gateway accepts the
+signature, or that the domain name/version and contract addresses are right
+for your network — only a live settlement shows that.
