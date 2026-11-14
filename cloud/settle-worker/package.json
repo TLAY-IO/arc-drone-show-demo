@@ -11,7 +11,7 @@
     "dev": "node --watch index.js"
   },
   "dependencies": {
-    "mqtt": "^5.10.0",
+    "mqtt": "^5.16.1",
     "@tlay/hashanchor-client": "github:TLAY-IO/hashanchor#v1.0.2"
   },
   "engines": {
