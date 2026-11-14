@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "ethers": "^6.13.0",
-    "mqtt": "^5.10.0"
+    "mqtt": "^5.16.1"
   },
   "engines": {
     "node": ">=20"
