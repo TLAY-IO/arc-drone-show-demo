@@ -78,6 +78,11 @@ docker compose -f docker-compose.sim.yml up --build
 open 'http://localhost:3000/demo?live=1'
 ```
 
+![The demo page fed by the device simulator: charging power, 5-second slices and per-slice settlement rows, with a "Simulated devices · no chain" label in the header](docs/img/demo-simulated.png)
+
+*The page on the simulator stack. The amber label and the `sim-` ids mark it
+as simulated; on real hardware the same page shows Circle transfer UUIDs.*
+
 A device simulator publishes seller-shaped events to a private broker, and the
 real SSE bridge and demo page render them: a slice every 5 s, a settlement
 batch every 30 s. The page is labelled `Simulated devices · no chain`, because
