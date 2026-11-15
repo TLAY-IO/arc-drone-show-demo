@@ -11,7 +11,7 @@ jobs:
     name: License + scrub checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run verify-build
         run: bash scripts/verify-build.sh
 
@@ -19,7 +19,7 @@ jobs:
     name: cloud/web build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -46,7 +46,7 @@ jobs:
     name: cloud/settle-worker syntax
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -59,7 +59,7 @@ jobs:
     name: cloud/burn-intent-worker tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -91,7 +91,7 @@ jobs:
     # web image build. It does NOT cover signing, settlement or minting —
     # nothing in the sim stack touches HashAnchor, Circle or Arc.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Syntax check
         run: node --check cloud/sim/index.js
       - name: Bring up the sim stack and read /api/stream
@@ -111,7 +111,7 @@ jobs:
       matrix:
         app: [drone, ecandle]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build apps/${{ matrix.app }}
         shell: bash
         working-directory: apps/${{ matrix.app }}
@@ -134,7 +134,7 @@ jobs:
     # curl-200 only proves the release page exists — the full proof remains a
     # fresh-clone `idf.py build` where the Component Manager fetches the tag.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check the pinned boat-mer tag is publicly reachable
         run: |
           tags=$(grep -hA3 'TLAY-IO/boat-mer:' \
