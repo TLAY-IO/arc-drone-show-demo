@@ -4,6 +4,12 @@
 # Not covered: the firmware's boat-mer pin (apps/*/main/idf_component.yml) and
 # the settle-worker's hashanchor pin are git tags, bumped by hand on purpose —
 # both apps must move to the same boat-mer tag together.
+#
+# Ignored on purpose (take these by hand, as their own change):
+#   - node image majors: only LTS lines are wanted as a base image, and
+#     Dependabot proposes the newest major whether or not it is LTS.
+#   - typescript / eslint / @types/node majors in cloud/web: they have to move
+#     together with what eslint-config-next supports (TypeScript 7 broke lint).
 version: 2
 updates:
   - package-ecosystem: npm
@@ -11,6 +17,13 @@ updates:
     schedule: { interval: weekly }
     groups:
       web: { patterns: ["*"] }
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: /cloud/burn-intent-worker
     schedule: { interval: weekly }
@@ -29,6 +42,9 @@ updates:
   - package-ecosystem: docker
     directories: ["/cloud/web", "/cloud/burn-intent-worker", "/cloud/settle-worker", "/cloud/sim"]
     schedule: { interval: weekly }
+    ignore:
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
