@@ -4,6 +4,10 @@
 
 A reference integration showing **BLE-native machine-economy nanopayments** — an eCandle ESP32 (energy seller) and a drone-agent ESP32 (energy buyer) negotiating, signing, and settling per-slice payments over BLE, then batched into Circle Gateway credit on Arc — and, via the optional Path A, minted on-chain on demand.
 
+**See it at a glance:** [tlay.io/machine-payment-reference-design](https://www.tlay.io/machine-payment-reference-design/)
+— the payment flow animated, the two ESP32 boards and what each runs, and
+footage from the show.
+
 This repository is the SF Drone Show 2026 companion. **It is a showcase. The reusable building blocks live upstream:**
 
 | Component | Repository | Role |
@@ -37,6 +41,10 @@ And the page those point to:
   the hosted demo page for the show's Arc mainnet run. It is live, not a
   recording: it reads the show devices, which are not powered continuously, so
   outside a session it shows the most recent slices and settlements and waits.
+
+And an overview of this reference design, with clips from the show:
+
+- **TLAY — overview page:** [tlay.io/machine-payment-reference-design](https://www.tlay.io/machine-payment-reference-design/)
 
 ---
 
